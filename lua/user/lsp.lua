@@ -64,8 +64,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		-- stylua and c_formatter_42). Your <Leader>gf in none-ls.lua already
 		-- does this, but having it here means it also works when you have a
 		-- server active that provides its own formatter (e.g. clangd).
-		opts.desc = "Format buffer"
-		keymap.set("n", "<Leader>gf", vim.lsp.buf.format, opts)
+		opts.desc = "Format buffer (Conform)"
+		keymap.set("n", "<Leader>gf", function()
+			local status_ok, conform = pcall(require, "conform")
+			if status_ok then
+				conform.format({ async = true, lsp_fallback = true })
+			else
+				vim.lsp.buf.format({ async = true })
+			end
+		end, opts)
 
 		-- ─── SYMBOLS & SEARCH ─────────────────────────────────────────────────
 
